@@ -2,7 +2,7 @@
 Se le pasa la carpeta donde publico.py dejó index.html (la copia local del repositorio; por defecto, /home/claude/work/publico-prueba). Sin
 simular nada —a diferencia de las demás pruebas, aquí no se pone S.noEdit por código—: la página tiene que nacer visitante por sí sola.
 Comprueba: modo visitante fijo (S.noEdit, .app.noedit, Lectura, sin Taller ni «Publicar cambios» ni exportar ni el segmento de
-disposiciones, perla, portada); la cabecera propia (lang, título, descripción, canonical, og:*, icono) y ninguna petición a cdnjs ni a
+disposiciones, perla, sin portada al abrir y con la portada detrás del «?»); la cabecera propia (lang, título, descripción, canonical, og:*, icono) y ninguna petición a cdnjs ni a
 claude.ai (D3 desde el mismo sitio); la marca rizoma-publico; que el mapa funciona (abrir, elegir, vecindario, tiempo, ayuda de diez verbos,
 Lámina PNG sin error) sin errores de JS; que la tecla T y P/R/C no hacen nada; y lo mismo con un localStorage que trae «taller». Falla
 (ERRORES) si algo no se cumple. Viaja copiada a tools/tandap.py del repositorio (la corre su tools/publicar.sh); las capturas van a una
@@ -42,7 +42,7 @@ async def main():
         print("   peticiones fuera del sitio:", sorted(set(u.split('?')[0] for u in fuera)))
         await pg.screenshot(path=OUT + "/p_portada.png")
         chk(errs, e["noEdit"] is True and "noedit" in e["cls"] and e["mode"] == "lectura", "nace como visitante: S.noEdit, .app.noedit, Lectura")
-        chk(errs, e["theme"] == "perla" and e["portada"], "abre en perla y con portada")
+        chk(errs, e["theme"] == "perla" and not e["portada"], "abre en perla, directo al mapa (sin portada: ui.19)")
         chk(errs, not e["taller"] and not e["publicar"] and not e["layPan"] and not e["layForce"] and not e["exportar"], "sin Taller, sin «Publicar cambios», sin exportar, sin el segmento Panorama · Rizoma · Canva")
         chk(errs, e["ayuda"] and e["cob"], "el «?» y «Qué hay y qué no hay» siguen")
         chk(errs, e["lang"] == "es" and e["title"].startswith("Rizoma 2.0 · Quién") and e["head"]["descr"] and "benjawilson.com/rizoma" in (e["head"]["canon"] or "") and e["head"]["og"] and e["head"]["icon"] and e["head"]["styles"] >= 2 and e["head"]["links"] >= 1 and e["head"]["titulosEnBody"] == 0, f"la cabecera es propia (título, descripción, canonical, og, icono; estilos en head: {e['head']['styles']})")
@@ -67,6 +67,13 @@ async def main():
         await pg.evaluate("() => uiHelp()"); await pg.wait_for_timeout(300)
         ay = await pg.evaluate("() => ({ verbos: [...mbox.querySelectorAll('.ui-verbos > b')].length, taller: getComputedStyle(mbox.querySelector('.ui-help .taller')).display })"); chk(errs, ay["verbos"] == 10 and ay["taller"] == "none", f"la ayuda del visitante: {ay['verbos']} verbos, sin la sección Taller")
         await pg.evaluate("() => closeModal()")
+        # la portada queda detrás del «?» (ui.19): la última línea de la ayuda la abre
+        await pg.evaluate("() => uiHelp()"); await pg.wait_for_timeout(300)
+        enlace = await pg.evaluate("() => (mbox.querySelector('#ui-help-portada') || {}).textContent || ''")
+        await pg.click("#ui-help-portada"); await pg.wait_for_timeout(500)
+        por = await pg.evaluate("() => { const p = document.getElementById('ui-portada'); return p ? p.textContent.slice(0, 80) : null; }")
+        chk(errs, enlace.startswith("Qué es este mapa") and bool(por) and "Rizoma 2.0" in por, f"la portada queda detrás del «?» («{enlace}»)")
+        await pg.click("#ui-p-mapa"); await pg.wait_for_timeout(300)
         # Lámina PNG: fuera del artefacto no hay capacidad de descargas: la lámina se muestra en un modal para guardarla con clic derecho
         await pg.click("#btn-png"); await pg.wait_for_timeout(2500)
         lam = await pg.evaluate("() => ({ modal: modal.style.display !== 'none', img: !!mbox.querySelector('img[src^=\"data:image/png\"]'), texto: (mbox.querySelector('p') || {}).textContent || '' })")
