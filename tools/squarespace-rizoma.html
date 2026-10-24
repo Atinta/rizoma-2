@@ -1,0 +1,13 @@
+<!-- benjawilson.com/rizoma · el bloque de código (Squarespace, página «Rizoma» en Not Linked, slug /rizoma) que incrusta la copia pública del mapa
+     a pantalla completa bajo la cabecera del sitio. Es lo que está pegado en el bloque desde el 24-oct-2026 (tanda P); si cambia, se pega de nuevo
+     en el editor de Squarespace (Pages → Rizoma → Edit → el bloque de código → lápiz). La copia pública se publica desde el taller con tools/publicar.sh. -->
+<style>
+  .rizoma-marco{position:fixed;left:0;right:0;bottom:0;top:var(--header-height,136px);z-index:5;background:#faf8f2;border-top:1px solid #e3e0d8}
+  .rizoma-marco iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .rizoma-nota{position:fixed;left:50%;bottom:7px;transform:translateX(-50%);z-index:6;margin:0;font:12px/1.4 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;color:#6b6a66;background:rgba(250,248,242,.94);padding:3px 11px;border:1px solid #e3e0d8;border-radius:999px;white-space:nowrap}
+  .rizoma-nota a{color:#b2452f;text-decoration:none;border-bottom:1px solid currentColor}
+  html,body{overflow:hidden!important}
+  #footer-sections{display:none}
+</style>
+<div class="rizoma-marco"><iframe src="https://atinta.github.io/rizoma-2/" title="Rizoma 2.0 · Quién se relaciona con quién en las artes visuales chilenas, 1991–hoy" allow="fullscreen" loading="eager"></iframe></div>
+<p class="rizoma-nota">Mejor en pantalla grande · cada hecho cita su fuente · <a href="https://atinta.github.io/rizoma-2/" target="_blank" rel="noopener">abrir a pantalla completa ↗</a></p>
